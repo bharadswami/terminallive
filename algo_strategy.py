@@ -85,6 +85,7 @@ class AlgoStrategy(gamelib.AlgoCore):
         for i in range(len(layout)):
             for j in range(len(layout[0])):
                 if layout[i][j]:
+                    gamelib.debug_write(i, j, layout[i][j])
                     spawn_req = (0, layout[i][j][0], [i, j], layout[i][j][1])
                     request_list.append(spawn_req)
                     if layout[i][j][2] != -1:
@@ -164,4 +165,4 @@ class AlgoStrategy(gamelib.AlgoCore):
 
 if __name__ == "__main__":
     algo = AlgoStrategy()
-    # algo.start()
+    algo.start()
