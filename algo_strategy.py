@@ -45,7 +45,7 @@ class AlgoStrategy(gamelib.AlgoCore):
         self.scored_on_locations = []
         self.cores_to_keep = 0.5
         self.custom_layout = [[(FILTER,0,2), (FILTER,0,2), None, None, None, None, None, None, None, None, None, None, None, (FILTER,3,5), None, (FILTER,3,5), None, None, None, None, None, None, None, None, None, None, (FILTER,0,2), (FILTER,0,2)], [None, (DESTRUCTOR,1,-1), (FILTER,0,6), None, None, None, None, None, None, None, None, None, None, (FILTER,3,5), None, (FILTER,3,5), None, None, None, None, None, None, None, None, None, (FILTER,0,17), (DESTRUCTOR,1,-1), None], [None, None, (FILTER,16,-1), (FILTER,0,6), (FILTER,0,6), None, None, None, None, None, None, None, None, (FILTER,3,18), None, (FILTER,3,18), None, None, None, None, None, None, None, None, None, (FILTER,0,17), None, None], [None, None, None, (ENCRYPTOR,8,9), (ENCRYPTOR,6,7), (FILTER,0,6), None, None, None, None, None, None, None, (FILTER,3,18), None, (FILTER,3,18), None, None, None, None, None, None, None, None, (FILTER,0,17), None, None, None], [None, None, None, None, (ENCRYPTOR,4,5), (FILTER,0,6), None, None, None, None, None, None, None, (FILTER,3,18), None, (FILTER,3,18), None, None, None, None, None, None, None, (FILTER,0,17), None, None, None, None], [None, None, None, None, None, (ENCRYPTOR,10,11), None, (FILTER,0,17), (FILTER,0,17), (FILTER,0,17), (FILTER,0,17), (FILTER,0,17), (FILTER,0,17), (FILTER,0,2), None, (FILTER,0,2), (FILTER,0,17), (FILTER,0,17), (FILTER,0,17), (FILTER,0,17), (FILTER,0,17), (FILTER,0,17), (FILTER,0,17), None, None, None, None, None], [None, None, None, None, None, None, None, None, (ENCRYPTOR,12,13), (ENCRYPTOR,14,15), None, None, None, (DESTRUCTOR,1,-1), None, (DESTRUCTOR,1,-1), None, None, None, None, None, None, None, None, None, None, None, None], [None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None], [None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None], [None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None], [None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None], [None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None], [None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None], [None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None]]
-        default_reqs = self.layout_to_request_list(self.custom_layout)
+        self.default_reqs = self.layout_to_request_list(self.custom_layout)
 
     def on_turn(self, turn_state):
         """
@@ -65,7 +65,7 @@ class AlgoStrategy(gamelib.AlgoCore):
 
     def custom_strategy(self, game_state):
         """Master method"""
-        complete_requests(default_reqs)
+        self.complete_requests(game_state, self.default_reqs)
 
 
 # Helpers
