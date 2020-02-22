@@ -60,6 +60,7 @@ class AlgoStrategy(gamelib.AlgoCore):
 [None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None],
 [None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None]
         ]
+        reqs = self.layout_to_request_list(self.custom_layout)
 
 
     def on_turn(self, turn_state):
@@ -80,7 +81,7 @@ class AlgoStrategy(gamelib.AlgoCore):
 
     def custom_strategy(self, game_state):
         """Master method"""
-        pass
+        complete_requests(reqs)
 
 # Helpers
     def layout_to_request_list(self, layout):
