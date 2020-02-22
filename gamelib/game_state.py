@@ -528,7 +528,7 @@ class GameState:
         self.enable_warnings = not suppress
         self.game_map.enable_warnings = not suppress
 
-    def get_target(self, attacking_unit):
+    def get_target(self, attacking_unit, attacker_location = None):
         """Returns target of given unit based on current map of the game board. 
         A Unit can often have many other units in range, and Units that attack do so once each frame.
 
@@ -547,7 +547,8 @@ class GameState:
             self.warn("Passed a {} to get_target as attacking_unit. Expected a GameUnit.".format(type(attacking_unit)))
             return
 
-        attacker_location = [attacking_unit.x, attacking_unit.y]
+        if attacker_location == None:
+            attacker_location = [attacking_unit.x, attacking_unit.y]
         possible_locations = self.game_map.get_locations_in_range(attacker_location, attacking_unit.attackRange)
         target = None
         target_stationary = True
