@@ -120,18 +120,28 @@ class AlgoStrategy(gamelib.AlgoCore):
             - LOCATION: tuple of location
             - PRIORITY: Priority of request
         """
-        pass
+        request_list = []
+        for i in range(len(layout)):
+            for j in range(len(layout[0])):
+                if layout[i][j]:
+                    spawn_req = (0, layout[i][j][0], [i, j], layout[i][j][1])
+                    request_list.append(spawn_req)
+                    if layout[i][j][2] != -1:
+                        upgrade_req = (1, layout[i][j][0], [i, j], layout[i][j][2])
+                        request_list.append(upgrade_req)
 
-    def complete_requests(self, game_state, request_list):
+        request_list.sort(key=lambda req: req[3])
+        return request_list
+
+    def complete_requests(self, game_state, request_list, max_priority = math.inf):
         for request in request_list:
+            if (game_state.get_resource(1) < self.cores_to_keep) or (request[3] > max_priority):
+                return 
             if request[0] == 0:
                 if game_state.can_spawn(request[1], request[2]):
                     game_state.attempt_spawn(request[1], request[2])
             elif request[0] == 1:
                 game_state.attempt_upgrade(request[2])
-            
-            if game_state.get_resource(1) < self.cores_to_keep:
-                return 
 
 # Possibly useful helper methods from starter algo
     def least_damage_spawn_location(self, game_state, location_options):
@@ -193,4 +203,4 @@ class AlgoStrategy(gamelib.AlgoCore):
 
 if __name__ == "__main__":
     algo = AlgoStrategy()
-    algo.start()
+    # algo.start()
