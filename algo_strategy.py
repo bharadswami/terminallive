@@ -45,8 +45,7 @@ class AlgoStrategy(gamelib.AlgoCore):
         self.scored_on_locations = []
         self.cores_to_keep = 0.5
         self.custom_layout = [[(FILTER,0,2), (FILTER,0,2), None, None, None, None, None, None, None, None, None, None, None, (FILTER,3,5), None, (FILTER,3,5), None, None, None, None, None, None, None, None, None, None, (FILTER,0,2), (FILTER,0,2)], [None, (DESTRUCTOR,1,-1), (FILTER,0,6), None, None, None, None, None, None, None, None, None, None, (FILTER,3,5), None, (FILTER,3,5), None, None, None, None, None, None, None, None, None, (FILTER,0,17), (DESTRUCTOR,1,-1), None], [None, None, (FILTER,16,-1), (FILTER,0,6), (FILTER,0,6), None, None, None, None, None, None, None, None, (FILTER,3,18), None, (FILTER,3,18), None, None, None, None, None, None, None, None, None, (FILTER,0,17), None, None], [None, None, None, (ENCRYPTOR,8,9), (ENCRYPTOR,6,7), (FILTER,0,6), None, None, None, None, None, None, None, (FILTER,3,18), None, (FILTER,3,18), None, None, None, None, None, None, None, None, (FILTER,0,17), None, None, None], [None, None, None, None, (ENCRYPTOR,4,5), (FILTER,0,6), None, None, None, None, None, None, None, (FILTER,3,18), None, (FILTER,3,18), None, None, None, None, None, None, None, (FILTER,0,17), None, None, None, None], [None, None, None, None, None, (ENCRYPTOR,10,11), None, (FILTER,0,17), (FILTER,0,17), (FILTER,0,17), (FILTER,0,17), (FILTER,0,17), (FILTER,0,17), (FILTER,0,2), None, (FILTER,0,2), (FILTER,0,17), (FILTER,0,17), (FILTER,0,17), (FILTER,0,17), (FILTER,0,17), (FILTER,0,17), (FILTER,0,17), None, None, None, None, None], [None, None, None, None, None, None, None, None, (ENCRYPTOR,12,13), (ENCRYPTOR,14,15), None, None, None, (DESTRUCTOR,1,-1), None, (DESTRUCTOR,1,-1), None, None, None, None, None, None, None, None, None, None, None, None], [None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None], [None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None], [None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None], [None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None], [None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None], [None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None], [None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None]]
-
-
+        default_reqs = self.layout_to_request_list(self.custom_layout)
 
     def on_turn(self, turn_state):
         """
@@ -66,34 +65,10 @@ class AlgoStrategy(gamelib.AlgoCore):
 
     def custom_strategy(self, game_state):
         """Master method"""
-        pass
+        complete_requests(default_reqs)
+
 
 # Helpers
-    # def layout_to_dict(self, layout):
-    #     """
-    #     Takes in a 2D LAYOUT array and returns a map of Location -> Unit_priority_tuple for all non-empty locations
-    #     LAYOUT: 2D array representing the game map. Vaules in the array are:
-    #         a) None: if we want this to be empty or
-    #         b) (UNIT_TYPE, UNIT_PRIORITY, UPGRADE_PRIORITY)
-    #     """
-    #     loc_dict = {}
-    #     for i in range(len(layout)):
-    #         for j in range(len(layout[0])):
-    #             if layout[i][j]:
-    #                 loc_dict[(i, j)] = layout[i][j]
-
-    #     return loc_dict
-
-    # def spawn_layout(self, game_state, layout_dict):
-    #     """
-    #     Takes in a layout_dict with unit locations and types and spawns them if units aren't in those locations
-    #     Use method layout_to_dict to convert a 2D layout array to a layout_dict
-    #     """
-    #     missing_unit_locs = filter_blocked_locations(self, layout_dict.keys(), game_state)
-    #     sort(missing_unit_locs, key=lambda loc: layout_dict[loc][2])
-    #     for loc in missing_unit_locs:
-    #         game_state.attempt_spawn(layout_dict[loc][1], loc)
-
     def layout_to_request_list(self, layout):
         """
         LAYOUT: 2D array representing the game map. Vaules in the array are:
