@@ -43,7 +43,7 @@ class AlgoStrategy(gamelib.AlgoCore):
         CORES = 0
         # This is a good place to do initial setup
         self.scored_on_locations = []
-        self.cores_to_keep = 0.5
+        self.cores_to_keep = 1
         self.custom_layout = [[(FILTER,0,2), (FILTER,0,2), None, None, None, None, None, None, None, None, None, None, None, (FILTER,3,5), None, (FILTER,3,5), None, None, None, None, None, None, None, None, None, None, (FILTER,0,2), (FILTER,0,2)], [None, (DESTRUCTOR,1,-1), (FILTER,0,6), None, None, None, None, None, None, None, None, None, None, (FILTER,3,5), None, (FILTER,3,5), None, None, None, None, None, None, None, None, None, (FILTER,0,17), (DESTRUCTOR,1,-1), None], [None, None, (FILTER,16,-1), (FILTER,0,6), (FILTER,0,6), None, None, None, None, None, None, None, None, (FILTER,3,18), None, (FILTER,3,18), None, None, None, None, None, None, None, None, None, (FILTER,0,17), None, None], [None, None, None, (ENCRYPTOR,8,9), (ENCRYPTOR,6,7), (FILTER,0,6), None, None, None, None, None, None, None, (FILTER,3,18), None, (FILTER,3,18), None, None, None, None, None, None, None, None, (FILTER,0,17), None, None, None], [None, None, None, None, (ENCRYPTOR,4,5), (FILTER,0,6), None, None, None, None, None, None, None, (FILTER,3,18), None, (FILTER,3,18), None, None, None, None, None, None, None, (FILTER,0,17), None, None, None, None], [None, None, None, None, None, (ENCRYPTOR,10,11), None, (FILTER,0,17), (FILTER,0,17), (FILTER,0,17), (FILTER,0,17), (FILTER,0,17), (FILTER,0,17), (FILTER,0,2), None, (FILTER,0,2), (FILTER,0,17), (FILTER,0,17), (FILTER,0,17), (FILTER,0,17), (FILTER,0,17), (FILTER,0,17), (FILTER,0,17), None, None, None, None, None], [None, None, None, None, None, None, None, None, (ENCRYPTOR,12,13), (ENCRYPTOR,14,15), None, None, None, (DESTRUCTOR,1,-1), None, (DESTRUCTOR,1,-1), None, None, None, None, None, None, None, None, None, None, None, None], [None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None], [None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None], [None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None], [None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None], [None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None], [None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None], [None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None]]
         self.default_reqs = self.layout_to_request_list(self.custom_layout)
         # for r in self.default_reqs:
@@ -67,8 +67,24 @@ class AlgoStrategy(gamelib.AlgoCore):
 
     def custom_strategy(self, game_state):
         """Master method"""
-        self.complete_requests(game_state, self.default_reqs)
+        if(game_state.turn_number == 0):
+            self.complete_requests(game_state, self.default_reqs)
+        if game_state.get_resource(CORES, 1) > 6:
+            if game_state.get_resource(BITS) > 8:
+                self.complete_requests(game_state, self.default_reqs)
+                self.findattack(game_state)
+            else:
+                self.complete_requests(game_state, self.default_reqs, max_priority=6)
+                self.spawnscrambler(game_state)
+        else:
+            self.complete_requests(game_state, self.default_reqs)
+            self.findattack(game_state)
 
+    def find_attack(self, game_state):
+        pass
+
+    def spawnscrambler(self, game_state):
+        pass
 
 # Helpers
     def layout_to_request_list(self, layout):
@@ -99,13 +115,13 @@ class AlgoStrategy(gamelib.AlgoCore):
     def complete_requests(self, game_state, request_list, max_priority = math.inf):
         for request in request_list:
             # gamelib.debug_write(request)
-            if (game_state.get_resource(0) < self.cores_to_keep) or (request[3] > max_priority):
+            if (game_state.get_resource(CORES) < self.cores_to_keep) or (request[3] > max_priority):
                 return
             if request[0] == 0:
                 # gamelib.debug_write(f"Running game_state.can_spawn({request[1]}, {request[2]})")
                 if game_state.can_spawn(request[1], request[2]):
                     game_state.attempt_spawn(request[1], request[2])
-                    gamelib.debug_write("Number of cores left: " + str(game_state.get_resource(0)) + " \n")
+                    gamelib.debug_write("Number of cores left: " + str(game_state.get_resource(CORES)) + " \n")
             elif request[0] == 1:
                 game_state.attempt_upgrade(request[2])
 
