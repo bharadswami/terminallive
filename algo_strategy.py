@@ -24,13 +24,13 @@ class AlgoStrategy(gamelib.AlgoCore):
         super().__init__()
         seed = random.randrange(maxsize)
         random.seed(seed)
-        gamelib.debug_write('Random seed: {}'.format(seed))
+        # gamelib.debug_write('Random seed: {}'.format(seed))
 
     def on_game_start(self, config):
         """
         Read in config and perform any initial setup here
         """
-        gamelib.debug_write('Configuring your custom algo strategy...')
+        # gamelib.debug_write('Configuring your custom algo strategy...')
         self.config = config
         global FILTER, ENCRYPTOR, DESTRUCTOR, PING, EMP, SCRAMBLER, BITS, CORES
         FILTER = config["unitInformation"][0]["shorthand"]
@@ -46,6 +46,8 @@ class AlgoStrategy(gamelib.AlgoCore):
         self.cores_to_keep = 0.5
         self.custom_layout = [[(FILTER,0,2), (FILTER,0,2), None, None, None, None, None, None, None, None, None, None, None, (FILTER,3,5), None, (FILTER,3,5), None, None, None, None, None, None, None, None, None, None, (FILTER,0,2), (FILTER,0,2)], [None, (DESTRUCTOR,1,-1), (FILTER,0,6), None, None, None, None, None, None, None, None, None, None, (FILTER,3,5), None, (FILTER,3,5), None, None, None, None, None, None, None, None, None, (FILTER,0,17), (DESTRUCTOR,1,-1), None], [None, None, (FILTER,16,-1), (FILTER,0,6), (FILTER,0,6), None, None, None, None, None, None, None, None, (FILTER,3,18), None, (FILTER,3,18), None, None, None, None, None, None, None, None, None, (FILTER,0,17), None, None], [None, None, None, (ENCRYPTOR,8,9), (ENCRYPTOR,6,7), (FILTER,0,6), None, None, None, None, None, None, None, (FILTER,3,18), None, (FILTER,3,18), None, None, None, None, None, None, None, None, (FILTER,0,17), None, None, None], [None, None, None, None, (ENCRYPTOR,4,5), (FILTER,0,6), None, None, None, None, None, None, None, (FILTER,3,18), None, (FILTER,3,18), None, None, None, None, None, None, None, (FILTER,0,17), None, None, None, None], [None, None, None, None, None, (ENCRYPTOR,10,11), None, (FILTER,0,17), (FILTER,0,17), (FILTER,0,17), (FILTER,0,17), (FILTER,0,17), (FILTER,0,17), (FILTER,0,2), None, (FILTER,0,2), (FILTER,0,17), (FILTER,0,17), (FILTER,0,17), (FILTER,0,17), (FILTER,0,17), (FILTER,0,17), (FILTER,0,17), None, None, None, None, None], [None, None, None, None, None, None, None, None, (ENCRYPTOR,12,13), (ENCRYPTOR,14,15), None, None, None, (DESTRUCTOR,1,-1), None, (DESTRUCTOR,1,-1), None, None, None, None, None, None, None, None, None, None, None, None], [None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None], [None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None], [None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None], [None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None], [None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None], [None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None], [None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None]]
         self.default_reqs = self.layout_to_request_list(self.custom_layout)
+        # for r in self.default_reqs:
+        #     gamelib.debug_write(r)
 
     def on_turn(self, turn_state):
         """
@@ -85,11 +87,10 @@ class AlgoStrategy(gamelib.AlgoCore):
         for i in range(len(layout)):
             for j in range(len(layout[0])):
                 if layout[i][j]:
-                    gamelib.debug_write(i, j, layout[i][j])
-                    spawn_req = (0, layout[i][j][0], [i, j], layout[i][j][1])
+                    spawn_req = (0, layout[i][j][0], [j, 13-i], layout[i][j][1])
                     request_list.append(spawn_req)
                     if layout[i][j][2] != -1:
-                        upgrade_req = (1, layout[i][j][0], [i, j], layout[i][j][2])
+                        upgrade_req = (1, layout[i][j][0], [j, 13-i], layout[i][j][2])
                         request_list.append(upgrade_req)
 
         request_list.sort(key=lambda req: req[3])
@@ -97,11 +98,14 @@ class AlgoStrategy(gamelib.AlgoCore):
 
     def complete_requests(self, game_state, request_list, max_priority = math.inf):
         for request in request_list:
-            if (game_state.get_resource(1) < self.cores_to_keep) or (request[3] > max_priority):
+            # gamelib.debug_write(request)
+            if (game_state.get_resource(0) < self.cores_to_keep) or (request[3] > max_priority):
                 return
             if request[0] == 0:
+                # gamelib.debug_write(f"Running game_state.can_spawn({request[1]}, {request[2]})")
                 if game_state.can_spawn(request[1], request[2]):
                     game_state.attempt_spawn(request[1], request[2])
+                    gamelib.debug_write("Number of cores left: " + str(game_state.get_resource(0)) + " \n")
             elif request[0] == 1:
                 game_state.attempt_upgrade(request[2])
 
@@ -158,9 +162,9 @@ class AlgoStrategy(gamelib.AlgoCore):
             # When parsing the frame data directly,
             # 1 is integer for yourself, 2 is opponent (StarterKit code uses 0, 1 as player_index instead)
             if not unit_owner_self:
-                gamelib.debug_write("Got scored on at: {}".format(location))
+                # gamelib.debug_write("Got scored on at: {}".format(location))
                 self.scored_on_locations.append(location)
-                gamelib.debug_write("All locations: {}".format(self.scored_on_locations))
+                # gamelib.debug_write("All locations: {}".format(self.scored_on_locations))
 
 
 if __name__ == "__main__":
