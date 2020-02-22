@@ -61,16 +61,10 @@ class AlgoStrategy(gamelib.AlgoCore):
 
         game_state.submit_turn()
 
-
-    """
-    NOTE: All the methods after this point are part of the sample starter-algo
-    strategy and can safely be replaced for your custom algo.
-    """
-
     def custom_strategy(self, game_state):
         """Master method"""
         pass
-
+    
 
 # Possibly useful helper methods from starter algo
     def least_damage_spawn_location(self, game_state, location_options):
