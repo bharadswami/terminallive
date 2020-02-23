@@ -72,19 +72,26 @@ class AlgoStrategy(gamelib.AlgoCore):
         if game_state.get_resource(CORES, 1) > 6:
             if game_state.get_resource(BITS) > 8:
                 self.complete_requests(game_state, self.default_reqs)
-                self.findattack(game_state)
+                self.find_attack(game_state)
             else:
-                self.complete_requests(game_state, self.default_reqs, max_priority=6)
                 self.spawnscrambler(game_state)
+                self.complete_requests(game_state, self.default_reqs, max_priority=6)
         else:
+            # self.spawnscrambler(game_state)
             self.complete_requests(game_state, self.default_reqs)
-            self.findattack(game_state)
+            self.find_attack(game_state)
 
     def find_attack(self, game_state):
-        pass
+        while game_state.can_spawn(PING, [5, 8]):
+            game_state.attempt_spawn(PING, [5, 8])
 
     def spawnscrambler(self, game_state):
-        pass
+        if game_state.can_spawn(FILTER, [6, 8]):
+            game_state.attempt_spawn(FILTER, [6, 8])
+        if game_state.can_spawn(SCRAMBLER, [14, 0]):
+            game_state.attempt_spawn(SCRAMBLER, [14, 0])
+        if game_state.contains_stationary_unit([6, 8]):
+            game_state.attempt_remove([6, 8])
 
 # Helpers
     def layout_to_request_list(self, layout):
@@ -181,53 +188,6 @@ class AlgoStrategy(gamelib.AlgoCore):
                 # gamelib.debug_write("Got scored on at: {}".format(location))
                 self.scored_on_locations.append(location)
                 # gamelib.debug_write("All locations: {}".format(self.scored_on_locations))
-
-    def simulate_path(self, game_state, start_location, unit, count):
-        unit = gamelib.GameUnit(unit, game_state.config)
-        path = game_state.find_path_to_edge(start)
-        wall_poped = 0
-        destroyer_damaged = 0
-        breaches = 0
-        damage_done = 0
-        health = unit.max_health
-        destroyed_list = []
-
-        if path[len(path) - 1] in game_state.game_map.get_edges()[0] or path[len(path) - 1] in game_state.game_map.get_edges()[1]:
-            frame = 0
-            i = 0
-            while (i < len(path)):
-                if count == 0 :
-                    break
-                location = path[i]
-                for _ in range(count):
-                    target = game_state.get_target(unit, location)
-                    if target: 
-                        if target.health <= unit.damage_f:
-                            if target.unit_type == FILTER:
-                                wall_poped += 1
-                            destroyed_list.append(target)
-                            if target.unit_type == DESTRUCTOR:
-                                destroyer_damaged += target.health
-                            damage_done += target.health
-                        else :
-                            target.health -= unit.damage_f
-                            if target.unit_type == DESTRUCTOR:
-                                destroyer_damaged += unit.damage_f
-                            damage_done += unit.damage_f
-                for attacker in game_state.get_attackers(location, 0):
-                    if attacker not in destroyed_list:
-                        health -= attacker.damage_i
-                        if health <= 0:
-                            count -= 1
-                            health = unit.max_health
-                if frame == unit.speed:
-                    i += 1
-                    frame = -1
-                frame += 1
-            if i == len(path):
-                breaches += count
-            return damage_done, wall_poped, destroyer_damaged, breaches
-        return 0,0,0,-1
 
 
 if __name__ == "__main__":
